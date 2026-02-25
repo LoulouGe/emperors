@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Le jeu des Empereurs Romains</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #landing-page {
+            /* Example styles for the landing page */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            /* Full height */
+        }
+
+        #playGameButton {
+            margin-top: 500px;
+            /* Adjust the value as needed */
+            z-index: 2;
+            /* Ensure it's above the video */
+            position: relative;
+            /* Needed for z-index to take effect */
+            /* Style your play button */
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        #game-landing {
+            background-image: url('/images/landing.webp');
+            background-size: cover;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Style for the question and choices container */
+        #roman-emperor {
+            text-align: center;
+            /* Center align text */
+            display: flex;
+            flex-direction: column;
+            /* Stack children vertically */
+            align-items: center;
+            /* Center children horizontally */
+            justify-content: center;
+            /* Center children vertically */
+            background-image: url('images/roman_emperor_game.webp');
+            /* Path to your background image */
+            background-size: cover;
+            /* Cover the entire page */
+            background-position: center;
+            /* Center the background image */
+            color: rgb(255, 0, 0);
+
+        }
+
+        .text-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            /* White background with opacity */
+            border-radius: 10px;
+            /* Rounded corners */
+            padding: 20px;
+            /* Space inside the box */
+            margin: 20px 0;
+            /* Space outside the box */
+            width: 80%;
+            /* Adjust width as needed */
+            max-width: 600px;
+            /* Maximum width */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            /* Subtle shadow for depth */
+            text-align: center;
+            /* Center text */
+            margin: 20px auto;
+            /* Adds top and bottom margin of 20px and auto margins on the sides */
+            width: 80%;
+            /* Adjust as needed */
+            max-width: 600px;
+            /* Adjust as needed for maximum width */
+            font-size: 20px;
+        }
+
+        /* Style for the choices */
+        .choice {
+            margin: 10px 0;
+            /* Add some space between choices */
+            font-size: 24px;
+            /* Large font size */
+            padding: 20px 40px;
+            /* Generous padding for a larger button */
+            background-color: #ff0000;
+            /* Bootstrap primary button color */
+            color: rgb(255, 215, 13);
+            /* White text color */
+            border: rgb(0, 0, 0);
+            /* No border */
+            border-radius: 15px;
+            /* Slightly rounded corners */
+            cursor: pointer;
+            /* Cursor changes to a pointer to indicate it's clickable */
+            transition: background-color 0.3s;
+            /* Smooth background color change on hover */
+        }
+
+
+        /* Style for the emperor image */
+        #image {
+            max-width: 100%;
+            /* Make image responsive */
+            height: auto;
+            /* Maintain aspect ratio */
+            margin: 20px 0;
+            /* Add some space around the image */
+        }
+
+
+        /* Styles for the Play button */
+        #playButton {
+            font-size: 30px;
+            /* Large font size */
+            padding: 20px 40px;
+            /* Generous padding for a larger button */
+            background-color: #ff0000;
+            /* Bootstrap primary button color */
+            color: rgb(255, 215, 13);
+            /* White text color */
+            border: rgb(0, 0, 0);
+            /* No border */
+            border-radius: 15px;
+            /* Slightly rounded corners */
+            cursor: pointer;
+            /* Cursor changes to a pointer to indicate it's clickable */
+            transition: background-color 0.3s;
+            /* Smooth background color change on hover */
+        }
+
+        #playButton:hover {
+            background-color: #940000;
+            /* Darker shade on hover */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Landing Page Section -->
+    <!-- <div id="landing-page" style="text-align: center;">
+        <video autoplay loop muted id="background-video"
+            style="position: fixed; right: 0; bottom: 0; min-width: 50%; min-height: 50%;">
+            <source src="images/logo.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <img src="/images/landing.webp" alt="Game Logo" style="max-width: 300px; margin: 20px auto; display: block;">
+    <button id="playGameButton">Jeu des Empereurs Romains</button>
+    </div> -->
+    <div id="landing-page"
+        style="text-align: center; position: relative; height: 100vh; display: flex; justify-content: center; align-items: center;">
+        <video autoplay loop muted id="background-video"
+            style="width: 50%; height: auto; z-index: -1; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <source src="images/logo.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <button id="playGameButton" style="z-index: 1; position: relative;">Jeu des Empereurs Romains</button>
+    </div>
+
+    <!-- Game Section (already existing) -->
+    <div id="game" style="display: none;">
+        <div id="game-landing">
+            <button id="playButton">Jouer</button>
+        </div>
+
+        <div id="roman-emperor" class="text-box">
+            <h1>Le jeu des Empereurs Romains</h1>
+            <div id="score" class="text-box">
+                <span id="progression">Question 1 sur 26</span><br>
+                Réponses correctes : <span id="correctCount">0</span><br>
+                Réponses fausses : <span id="incorrectCount">0</span>
+            </div>
+            <!-- <button id="next">Prochain Empereur</button> -->
+            <div id="question"></div>
+            <img id="image" src="" alt="Emperor Image" style="max-width: 200px;">
+            <audio id="sound" src=""></audio>
+            <div id="choices"></div>
+        </div>
+    </div>
+    <script>
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        document.getElementById('playGameButton').addEventListener('click', function () {
+            document.getElementById('landing-page').style.display = 'none'; // Hide the landing page
+            document.getElementById('game').style.display = 'block'; // Show the game section
+            // Optionally, initialize or reset the game state here
+        });
+
+        const emperors = [
+            { name: "Auguste", reign: "27 av. J.-C. - 14 ap. J.-C.", image: "/images/Auguste.jpg", sound: "sounds/Auguste.mp3" },
+            { name: "Tibère", reign: "14 ap. J.-C. - 37 ap. J.-C.", image: "/images/Tibère.jpg", sound: "sounds/Tibère.mp3" },
+            { name: "Caligula", reign: "37 ap. J.-C. - 41 ap. J.-C.", image: "/images/Caligula.jpg", sound: "sounds/Caligula.mp3" },
+            { name: "Claude", reign: "41 ap. J.-C. - 54 ap. J.-C.", image: "/images/Claude.jpg", sound: "sounds/Claude.mp3" },
+            { name: "Néron", reign: "54 ap. J.-C. - 68 ap. J.-C.", image: "/images/Néron.jpg", sound: "sounds/Néron.mp3" },
+            { name: "Galba", reign: "68 ap. J.-C. - 69 ap. J.-C.", image: "/images/Galba.jpg", sound: "sounds/Galba.mp3" },
+            { name: "Othon", reign: "69 ap. J.-C. - 69 ap. J.-C.", image: "/images/Othon.jpg", sound: "sounds/Othon.mp3" },
+            { name: "Vitellius", reign: "69 ap. J.-C. - 69 ap. J.-C.", image: "/images/Vitellius.jpg", sound: "sounds/Vitellius.mp3" },
+            { name: "Vespasien", reign: "69 ap. J.-C. - 79 ap. J.-C.", image: "/images/Vespasien.jpg", sound: "sounds/Vespasien.mp3" },
+            { name: "Titus", reign: "79 ap. J.-C. - 81 ap. J.-C.", image: "/images/Titus.jpg", sound: "sounds/Titus.mp3" },
+            { name: "Domitien", reign: "81 ap. J.-C. - 96 ap. J.-C.", image: "/images/Domitien.jpg", sound: "sounds/Domitien.mp3" },
+            { name: "Nerva", reign: "96 ap. J.-C. - 98 ap. J.-C.", image: "/images/Nerva.jpg", sound: "sounds/Nerva.mp3" },
+            { name: "Trajan", reign: "98 ap. J.-C. - 117 ap. J.-C.", image: "/images/Trajan.jpg", sound: "sounds/Trajan.mp3" },
+            { name: "Hadrien", reign: "117 ap. J.-C. - 138 ap. J.-C.", image: "/images/Hadrien.jpg", sound: "sounds/Hadrien.mp3" },
+            { name: "Antonin le Pieux", reign: "138 ap. J.-C. - 161 ap. J.-C.", image: "/images/Antonin le Pieux.jpg", sound: "sounds/Antonin le Pieux.mp3" },
+            { name: "Lucius Verus", reign: "161 ap. J.-C. - 169 ap. J.-C.", image: "/images/Lucius Verus.jpg", sound: "sounds/Lucius Verus.mp3" },
+            { name: "Marc Aurèle", reign: "161 ap. J.-C. - 180 ap. J.-C.", image: "/images/Marc Aurèle.jpg", sound: "sounds/Marc Aurèle.mp3" },
+            { name: "Commode", reign: "180 ap. J.-C. - 192 ap. J.-C.", image: "/images/Commode.jpg", sound: "sounds/Commode.mp3" },
+            { name: "Pertinax", reign: "193 ap. J.-C. - 193 ap. J.-C.", image: "/images/Pertinax.jpg", sound: "sounds/Pertinax.mp3" },
+            { name: "Didius Julianus", reign: " 193 ap. J.-C. - 193 ap. J.-C.", image: "/images/Didius Julianus.jpg", sound: "sounds/Didius Julianus.mp3" },
+            { name: "Septime Sévère", reign: "193 ap. J.-C. - 211 ap. J.-C.", image: "/images/Septime Sévère.jpg", sound: "sounds/Septime Sévère.mp3" },
+            { name: "Caracalla", reign: "198 ap. J.-C. - 217 ap. J.-C.", image: "/images/Caracalla.jpg", sound: "sounds/Caracalla.mp3" },
+            { name: "Géta", reign: "209 ap. J.-C. - 211 ap. J.-C.", image: "/images/Géta.jpg", sound: "sounds/Géta.mp3" },
+            { name: "Macrin", reign: "217 ap. J.-C. - 218 ap. J.-C.", image: "/images/Macrin.jpg", sound: "sounds/Macrin.mp3" },
+            { name: "Héliogabale", reign: "218 ap. J.-C. - 222 ap. J.-C.", image: "/images/Héliogabale.jpg", sound: "sounds/Héliogabale.mp3" },
+            { name: "Sévère Alexandre", reign: "222 ap. J.-C. - 235 ap. J.-C.", image: "/images/Sévère Alexandre.jpg", sound: "sounds/Sévère Alexandre.mp3" },
+        ];
+
+        let currentEmperorIndex = 0;
+        let sessionEmperors = [...emperors]; // Copy the emperors array
+        shuffleArray(sessionEmperors); // Shuffle for the session
+
+        let correctAnswersCount = 0;
+        let incorrectAnswersCount = 0;
+        updateScoreDisplay();
+
+        document.getElementById('playButton').onclick = function () {
+            document.getElementById('game-landing').style.display = 'none';
+            document.getElementById('roman-emperor').style.display = 'block';
+            fetchNextEmperor(); // Fetch the first emperor when the game starts
+        };
+
+        function getRandomEmperor() {
+            // const randomIndex = Math.floor(Math.random() * emperors.length);
+            return sessionEmperors[currentEmperorIndex];
+        }
+
+        function getRandomChoices(correctReign) {
+            let choices = [correctReign]; // Start with the correct answer
+            let wrongAnswers = emperors
+                .filter(emp => emp.reign !== correctReign) // Exclude the correct answer
+                .map(emp => emp.reign); // Get an array of just the reigns
+
+            // Shuffle the wrongAnswers array (using a modern version of the Fisher-Yates shuffle)
+            for (let i = wrongAnswers.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [wrongAnswers[i], wrongAnswers[j]] = [wrongAnswers[j], wrongAnswers[i]];
+            }
+
+            // Add 3 wrong answers to the choices
+            choices = choices.concat(wrongAnswers.slice(0, 3));
+
+            // Optionally shuffle the choices array to randomize the position of the correct answer
+            for (let i = choices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [choices[i], choices[j]] = [choices[j], choices[i]];
+            }
+
+            return choices;
+        }
+
+        // Function to fetch and display the next emperor's question
+        async function fetchNextEmperor() {
+            updateScoreDisplay();
+            const emperor = getRandomEmperor();
+            let questionText = `Quelles sont les dates de règne de ${emperor.name} ? 🤔`;
+            document.getElementById('question').innerHTML = `<div class="text-box">${questionText}</div>`;
+            document.getElementById('image').src = emperor.image;
+            let questionAudioPath = "/sounds/Quelles sont les dates de règne de.mp3";
+            let emperorAudioPath = emperor.sound;
+
+            const soundElement = document.getElementById('sound');
+            soundElement.src = questionAudioPath;
+
+            // Play the question audio
+            soundElement.play();
+
+            // When the question audio ends, play the emperor's name audio
+            soundElement.onended = () => {
+                soundElement.src = emperorAudioPath;
+                soundElement.play();
+                // Reset the event listener if you plan to play more sounds later
+                soundElement.onended = null;
+            };
+            soundElement.play();
+
+            // Get random choices including the correct answer
+            let choices = getRandomChoices(emperor.reign);
+
+            // Display choices
+            const choicesElement = document.getElementById('choices');
+            choicesElement.innerHTML = ''; // Clear previous choices
+            choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.classList.add('choice');
+                button.innerText = choice;
+                button.onclick = function () {
+                    const isCorrect = choice === emperor.reign;
+                    handleChoice(isCorrect, button, emperor.reign, soundElement);
+                };
+                document.getElementById('choices').appendChild(button);
+            });
+        }
+
+        // Function to handle choice selection
+        function handleChoice(isCorrect, button, emperorReign, soundElement) {
+            // Disable all buttons to prevent further clicks
+            const buttons = document.getElementById('choices').getElementsByTagName('button');
+            for (let btn of buttons) {
+                btn.disabled = true;
+            }
+
+            // Highlight the clicked button
+            button.style.backgroundColor = isCorrect ? "lightgreen" : "lightcoral";
+
+            // Highlight the correct button if the choice was wrong
+            if (!isCorrect) {
+                for (let btn of buttons) {
+                    if (btn.innerText.trim() === emperorReign.trim()) {
+                        btn.style.backgroundColor = "lightgreen";
+                        break; // Assuming only one button has the correct answer
+                    }
+                }
+            }
+
+            const feedbackAudioPath = isCorrect ? "/sounds/Tu es au top.mp3" : "/sounds/Tu es trop nulle.mp3";
+            // Update counters
+            if (isCorrect) {
+                correctAnswersCount++;
+            } else {
+                incorrectAnswersCount++;
+            }
+            soundElement.src = feedbackAudioPath;
+            soundElement.play();
+            soundElement.onended = () => {
+                console.log(isCorrect ? 'C\'est juste!' : 'C\'est faux! Réessaye plus tard.');
+                soundElement.onended = null; // Remove the event listener to avoid unintended repeats
+                currentEmperorIndex++;
+                updateScoreDisplay();
+                if (currentEmperorIndex >= sessionEmperors.length) {
+                    let result = `Tu as finis! Tu as fait ${correctAnswersCount} bonnes réponses et ${incorrectAnswersCount} mauvaises réponses.`;
+                    if (incorrectAnswersCount <= 5) {
+                        result += " Tu es un génie! 🥳🥳🥳";
+                    } else if (correctAnswersCount > incorrectAnswersCount) {
+                        result += " Tu es sur la bonne voie, continue de t'entraîner! 😉";
+                    } else {
+                        result += " Tu feras mieux la prochaine fois! 😥😥";
+                    }
+                    alert(result);
+                    // Reset for a new session
+                    correctAnswersCount = 0;
+                    incorrectAnswersCount = 0;
+                    currentEmperorIndex = 0;
+                    shuffleArray(sessionEmperors);
+                }
+                fetchNextEmperor(); // Start the new session
+            };
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('correctCount').textContent = correctAnswersCount;
+            document.getElementById('incorrectCount').textContent = incorrectAnswersCount;
+            // Add progression display here, e.g., "Question 3 of 26"
+            document.getElementById('progression').textContent = `Question ${currentEmperorIndex + 1} sur ${sessionEmperors.length}`;
+        }
+    </script>
+</body>
+
+</html>

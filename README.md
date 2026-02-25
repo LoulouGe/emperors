@@ -2,9 +2,13 @@
 
 Un jeu de quiz interactif pour apprendre les dates de regne des 26 empereurs romains, d'Auguste a Severe Alexandre. Avec des portraits, du son et un score a la fin !
 
+## Jouer en ligne
+
+Le jeu est disponible ici : https://loulouge.github.io/emperors/
+
 ## Comment jouer
 
-1. Ouvrir `index.html` dans un navigateur (ou utiliser Live Server dans VS Code)
+1. Ouvrir le lien ci-dessus (ou lancer `index.html` dans un navigateur avec Live Server)
 2. Cliquer sur **Jeu des Empereurs Romains** pour commencer
 3. Cliquer sur **Jouer**
 4. Pour chaque empereur, choisir les bonnes dates de regne parmi 4 propositions

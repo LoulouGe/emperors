@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Claude Code
+.claude/
+
+# Thumbnails
+Thumbs.db
+
+# Logs
+*.log

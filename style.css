@@ -5,6 +5,13 @@ body, html {
     width: 100%;
     height: 100%;
     font-family: Georgia, 'Times New Roman', serif;
+    overscroll-behavior: none;
+}
+
+/* Supprimer le delai au tap et le flash gris sur mobile */
+button {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* === Page d'accueil === */
@@ -12,6 +19,7 @@ body, html {
     text-align: center;
     position: relative;
     height: 100vh;
+    height: 100dvh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -42,10 +50,17 @@ body, html {
     font-family: Georgia, 'Times New Roman', serif;
 }
 
-#playGameButton:hover,
-#playGameButton:focus {
+#playGameButton:focus,
+#playGameButton:active {
     background-color: #a00000;
     outline: 2px solid #ffd700;
+}
+
+@media (hover: hover) {
+    #playGameButton:hover {
+        background-color: #a00000;
+        outline: 2px solid #ffd700;
+    }
 }
 
 /* === Section du jeu === */
@@ -75,6 +90,7 @@ body, html {
     background-size: cover;
     background-position: center;
     min-height: 100vh;
+    min-height: 100dvh;
     padding: 20px;
 }
 
@@ -128,11 +144,19 @@ body, html {
     min-width: 280px;
 }
 
-.choice:hover,
-.choice:focus {
+.choice:focus,
+.choice:active {
     background-color: #a00000;
     transform: scale(1.03);
     outline: 2px solid #ffd700;
+}
+
+@media (hover: hover) {
+    .choice:hover {
+        background-color: #a00000;
+        transform: scale(1.03);
+        outline: 2px solid #ffd700;
+    }
 }
 
 .choice:disabled {
@@ -169,19 +193,28 @@ body, html {
     font-family: Georgia, 'Times New Roman', serif;
 }
 
-#playButton:hover, #playButton:focus,
-#menuButton:hover, #menuButton:focus,
-#replayButton:hover, #replayButton:focus {
+#playButton:focus, #playButton:active,
+#menuButton:focus, #menuButton:active,
+#replayButton:focus, #replayButton:active {
     background-color: #a00000;
     outline: 2px solid #ffd700;
+}
+
+@media (hover: hover) {
+    #playButton:hover,
+    #menuButton:hover,
+    #replayButton:hover {
+        background-color: #a00000;
+        outline: 2px solid #ffd700;
+    }
 }
 
 #menuButton {
     font-size: 16px;
     padding: 10px 20px;
     position: fixed;
-    top: 15px;
-    left: 15px;
+    top: max(15px, env(safe-area-inset-top));
+    left: max(15px, env(safe-area-inset-left));
     z-index: 10;
 }
 
@@ -192,6 +225,7 @@ body, html {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+    min-height: 100dvh;
     background-image: url('images/roman_emperor_game.webp');
     background-size: cover;
     background-position: center;

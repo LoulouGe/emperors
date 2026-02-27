@@ -33,6 +33,68 @@ let sessionEmperors = [];    // Copie mélangée pour une partie
 let currentEmperorIndex = 0; // Numéro de la question en cours
 let correctAnswersCount = 0;
 let incorrectAnswersCount = 0;
+let partieId = 0;            // Pour annuler les sons quand on change d'écran
+
+// === Système audio compatible Safari iOS ===
+// Sur Safari, les sons ne marchent que si on "déverrouille" l'audio
+// lors d'un clic de l'utilisateur. On utilise l'API Web Audio
+// qui reste déverrouillée pour toute la session après le premier clic.
+let audioCtx = null;
+const audioCache = {};       // Cache des sons déjà chargés
+let sonEnCours = null;       // Pour pouvoir arrêter le son en cours
+
+// Déverrouiller l'audio (à appeler lors d'un clic)
+function deverrouillerAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
+// Arrêter le son en cours
+function arreterSon() {
+    if (sonEnCours) {
+        sonEnCours.onended = null;
+        try { sonEnCours.stop(); } catch (e) {}
+        sonEnCours = null;
+    }
+}
+
+// Jouer un fichier son et attendre qu'il finisse
+function jouerSon(url) {
+    if (!audioCtx) return Promise.resolve();
+
+    // Charger le son (ou utiliser le cache)
+    var promesseBuffer;
+    if (audioCache[url]) {
+        promesseBuffer = Promise.resolve(audioCache[url]);
+    } else {
+        promesseBuffer = fetch(url)
+            .then(function (reponse) { return reponse.arrayBuffer(); })
+            .then(function (donnees) { return audioCtx.decodeAudioData(donnees); })
+            .then(function (buffer) {
+                audioCache[url] = buffer;
+                return buffer;
+            });
+    }
+
+    return promesseBuffer.then(function (buffer) {
+        return new Promise(function (resolve) {
+            arreterSon();
+            var source = audioCtx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioCtx.destination);
+            sonEnCours = source;
+            source.onended = function () {
+                sonEnCours = null;
+                resolve();
+            };
+            source.start(0);
+        });
+    });
+}
 
 // === Références aux éléments HTML ===
 const landingPage = document.getElementById('landing-page');
@@ -51,13 +113,6 @@ function shuffleArray(array) {
     }
 }
 
-// === Jouer un son en gérant les erreurs d'autoplay ===
-function playSound(audioElement) {
-    audioElement.play().catch(function (err) {
-        console.log("Le navigateur a bloqué le son automatique :", err.message);
-    });
-}
-
 // === Précharger l'image du prochain empereur ===
 function preloadNextImage() {
     const nextIndex = currentEmperorIndex + 1;
@@ -70,12 +125,14 @@ function preloadNextImage() {
 // === Attacher tous les boutons de navigation ===
 // Bouton "Jeu des Empereurs Romains" sur la page d'accueil
 document.getElementById('playGameButton').addEventListener('click', function () {
+    deverrouillerAudio();
     landingPage.style.display = 'none';
     gameSection.style.display = 'block';
 });
 
 // Bouton "Jouer" sur l'écran avec le fond
 document.getElementById('playButton').addEventListener('click', function () {
+    deverrouillerAudio();
     startNewGame();
 });
 
@@ -86,6 +143,7 @@ menuButton.addEventListener('click', function () {
 
 // Bouton "Rejouer" sur l'écran de résultat
 document.getElementById('replayButton').addEventListener('click', function () {
+    deverrouillerAudio();
     startNewGame();
 });
 
@@ -96,6 +154,9 @@ document.getElementById('resultMenuButton').addEventListener('click', function (
 
 // === Revenir au menu principal ===
 function goToMenu() {
+    partieId++;
+    arreterSon();
+
     // Cacher tout
     gameSection.style.display = 'none';
     romanEmperor.style.display = 'none';
@@ -105,15 +166,13 @@ function goToMenu() {
 
     // Réafficher la page d'accueil
     landingPage.style.display = 'flex';
-
-    // Arrêter le son en cours
-    const soundElement = document.getElementById('sound');
-    soundElement.pause();
-    soundElement.onended = null;
 }
 
 // === Démarrer une nouvelle partie ===
 function startNewGame() {
+    partieId++;
+    arreterSon();
+
     // Réinitialiser les compteurs
     correctAnswersCount = 0;
     incorrectAnswersCount = 0;
@@ -163,6 +222,7 @@ function getRandomChoices(correctReign) {
 function fetchNextEmperor() {
     updateScoreDisplay();
     const emperor = getRandomEmperor();
+    const maPartie = partieId;
 
     // Afficher la question
     const questionText = "Quelles sont les dates de règne de " + emperor.name + " ?";
@@ -177,15 +237,10 @@ function fetchNextEmperor() {
     preloadNextImage();
 
     // Jouer le son de la question puis le nom de l'empereur
-    const soundElement = document.getElementById('sound');
-    soundElement.src = "sounds/Quelles sont les dates de règne de.mp3";
-    playSound(soundElement);
-
-    soundElement.onended = function () {
-        soundElement.src = emperor.sound;
-        playSound(soundElement);
-        soundElement.onended = null;
-    };
+    jouerSon("sounds/Quelles sont les dates de règne de.mp3").then(function () {
+        if (partieId !== maPartie) return;
+        jouerSon(emperor.sound);
+    });
 
     // Créer les boutons de choix
     const choices = getRandomChoices(emperor.reign);
@@ -198,14 +253,16 @@ function fetchNextEmperor() {
         button.innerText = choice;
         button.onclick = function () {
             const isCorrect = choice === emperor.reign;
-            handleChoice(isCorrect, button, emperor.reign, soundElement);
+            handleChoice(isCorrect, button, emperor.reign);
         };
         choicesElement.appendChild(button);
     });
 }
 
 // === Gérer le clic sur un choix ===
-function handleChoice(isCorrect, button, emperorReign, soundElement) {
+function handleChoice(isCorrect, button, emperorReign) {
+    const maPartie = partieId;
+
     // Désactiver tous les boutons
     const buttons = document.getElementById('choices').getElementsByTagName('button');
     for (let i = 0; i < buttons.length; i++) {
@@ -236,26 +293,25 @@ function handleChoice(isCorrect, button, emperorReign, soundElement) {
         incorrectAnswersCount++;
     }
 
-    // Jouer le son de feedback
-    const feedbackAudioPath = isCorrect ? "sounds/Tu es au top.mp3" : "sounds/Tu es trop nulle.mp3";
-    soundElement.src = feedbackAudioPath;
-    playSound(soundElement);
+    // Jouer le son de feedback, puis passer à la suite
+    const feedbackPath = isCorrect ? "sounds/Tu es au top.mp3" : "sounds/Tu es trop nulle.mp3";
+    jouerSon(feedbackPath).then(function () {
+        if (partieId !== maPartie) return;
 
-    soundElement.onended = function () {
-        soundElement.onended = null;
         currentEmperorIndex++;
         updateScoreDisplay();
 
-        // Attendre 1.5 secondes pour que Louise puisse voir la bonne réponse
+        // Attendre 1.5 secondes pour voir la bonne réponse
         setTimeout(function () {
-            // Vérifier si la partie est terminée
+            if (partieId !== maPartie) return;
+
             if (currentEmperorIndex >= sessionEmperors.length) {
                 showResults();
             } else {
                 fetchNextEmperor();
             }
         }, 1500);
-    };
+    });
 }
 
 // === Afficher l'écran de résultat ===
@@ -286,4 +342,3 @@ function updateScoreDisplay() {
     const total = sessionEmperors.length || emperors.length || 26;
     document.getElementById('progression').textContent = "Question " + (currentEmperorIndex + 1) + " sur " + total;
 }
-

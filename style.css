@@ -146,14 +146,26 @@ button {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    background-image: url('images/roman_emperor_game.webp');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
+    /* Le fond est mis dans ::before pour que ca marche sur iPhone */
+    position: relative;
     min-height: 100vh;
     min-height: 100dvh;
     padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
     padding-top: calc(20px + env(safe-area-inset-top));
+}
+
+/* Image de fond fixe qui marche aussi sur Safari iOS */
+#roman-emperor::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('images/roman_emperor_game.webp');
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
 }
 
 /* === Boite de texte (style glassmorphism) === */
@@ -424,11 +436,23 @@ button {
     justify-content: center;
     min-height: 100vh;
     min-height: 100dvh;
+    position: relative;
+    padding: 20px;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+}
+
+/* Image de fond pour l'ecran de resultat (meme technique que le jeu) */
+#result-screen::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-image: url('images/roman_emperor_game.webp');
     background-size: cover;
     background-position: center;
-    padding: 20px;
-    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    z-index: -1;
 }
 
 .result-box h1 {

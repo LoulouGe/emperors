@@ -102,7 +102,6 @@ function jouerSon(url) {
 // === References aux elements HTML ===
 const landingPage = document.getElementById('landing-page');
 const gameSection = document.getElementById('game');
-const gameLanding = document.getElementById('game-landing');
 const romanEmperor = document.getElementById('roman-emperor');
 const resultScreen = document.getElementById('result-screen');
 const resultMessage = document.getElementById('result-message');
@@ -144,11 +143,6 @@ document.getElementById('playGameButton').addEventListener('click', function () 
     deverrouillerAudio();
     landingPage.style.display = 'none';
     gameSection.style.display = 'block';
-});
-
-// Bouton "Jouer" sur l'ecran avec le fond
-document.getElementById('playButton').addEventListener('click', function () {
-    deverrouillerAudio();
     startNewGame();
 });
 
@@ -178,7 +172,6 @@ function goToMenu() {
     romanEmperor.style.display = 'none';
     resultScreen.style.display = 'none';
     menuButton.style.display = 'none';
-    gameLanding.style.display = 'flex';
 
     // Reafficher la page d'accueil
     landingPage.style.display = 'flex';
@@ -199,7 +192,6 @@ function startNewGame() {
     shuffleArray(sessionEmperors);
 
     // Afficher la zone de jeu, cacher le reste
-    gameLanding.style.display = 'none';
     resultScreen.style.display = 'none';
     romanEmperor.style.display = 'flex';
     menuButton.style.display = 'block';
@@ -276,7 +268,13 @@ function fetchNextEmperor() {
     choices.forEach(function (choice) {
         const button = document.createElement('button');
         button.classList.add('choice');
-        button.innerText = choice;
+
+        // Separer les deux dates (ex: "27 av. J.-C. - 14 ap. J.-C.")
+        var parties = choice.split(' - ');
+        button.innerHTML =
+            '<span class="date-line">👑 ' + parties[0] + '</span>' +
+            '<span class="date-line">⚰️ ' + parties[1] + '</span>';
+
         button.onclick = function () {
             const isCorrect = choice === emperor.reign;
             handleChoice(isCorrect, button, emperor.reign);

@@ -139,18 +139,6 @@ button {
     display: none;
 }
 
-#game-landing {
-    background-image: url('images/landing.webp');
-    background-size: cover;
-    background-position: center;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 /* === Zone de jeu principale === */
 #roman-emperor {
     text-align: center;
@@ -282,14 +270,22 @@ button {
     box-shadow: 0 4px 20px rgba(255, 215, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
+/* === Grille de choix (2x2) === */
+#choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 90%;
+    max-width: 560px;
+    margin: 0 auto;
+}
+
 /* === Boutons de choix === */
 .choice {
     display: block;
-    width: 90%;
-    max-width: 400px;
-    margin: 8px auto;
+    width: auto;
     font-size: 17px;
-    padding: 14px 20px;
+    padding: 14px 12px;
     background: linear-gradient(135deg, var(--rouge-empire), var(--rouge-clair));
     color: var(--or);
     border: 2px solid rgba(255, 215, 0, 0.4);
@@ -301,6 +297,12 @@ button {
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
     min-height: 48px;
     animation: slideUp 0.4s ease-out backwards;
+}
+
+/* Lignes de dates dans les boutons de choix */
+.date-line {
+    display: block;
+    line-height: 1.4;
 }
 
 /* Delai d'animation pour chaque bouton */
@@ -346,8 +348,7 @@ button {
     border-color: #e53935;
 }
 
-/* === Boutons Jouer / Menu / Rejouer === */
-#playButton,
+/* === Boutons Rejouer / Menu === */
 #replayButton,
 #resultMenuButton {
     font-size: 22px;
@@ -364,7 +365,6 @@ button {
     min-height: 48px;
 }
 
-#playButton:focus, #playButton:active,
 #replayButton:focus, #replayButton:active,
 #resultMenuButton:focus, #resultMenuButton:active {
     background: linear-gradient(135deg, var(--rouge-clair), #b01515);
@@ -374,7 +374,6 @@ button {
 }
 
 @media (hover: hover) {
-    #playButton:hover,
     #replayButton:hover,
     #resultMenuButton:hover {
         background: linear-gradient(135deg, var(--rouge-clair), #b01515);
@@ -467,7 +466,10 @@ button {
 
     .choice {
         font-size: 16px;
-        padding: 13px 18px;
+        padding: 13px 14px;
+    }
+
+    #choices {
         width: 92%;
     }
 
@@ -495,7 +497,10 @@ button {
 
     .choice {
         font-size: 15px;
-        padding: 12px 14px;
+        padding: 12px 10px;
+    }
+
+    #choices {
         width: 96%;
     }
 
@@ -518,7 +523,6 @@ button {
         padding: 8px 14px;
     }
 
-    #playButton,
     #replayButton,
     #resultMenuButton {
         font-size: 18px;
@@ -539,6 +543,10 @@ button {
     #image {
         width: 100px;
         height: 100px;
+    }
+
+    #choices {
+        grid-template-columns: 1fr;
     }
 
     .choice {

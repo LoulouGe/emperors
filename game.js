@@ -1,4 +1,4 @@
-// === Les données des empereurs ===
+// === Les donnees des empereurs ===
 const emperors = [
     { name: "Auguste", reign: "27 av. J.-C. - 14 ap. J.-C.", image: "images/Auguste.jpg", sound: "sounds/Auguste.mp3" },
     { name: "Tibère", reign: "14 ap. J.-C. - 37 ap. J.-C.", image: "images/Tibère.jpg", sound: "sounds/Tibère.mp3" },
@@ -29,21 +29,21 @@ const emperors = [
 ];
 
 // === Variables globales ===
-let sessionEmperors = [];    // Copie mélangée pour une partie
-let currentEmperorIndex = 0; // Numéro de la question en cours
+let sessionEmperors = [];    // Copie melangee pour une partie
+let currentEmperorIndex = 0; // Numero de la question en cours
 let correctAnswersCount = 0;
 let incorrectAnswersCount = 0;
-let partieId = 0;            // Pour annuler les sons quand on change d'écran
+let partieId = 0;            // Pour annuler les sons quand on change d'ecran
 
-// === Système audio compatible Safari iOS ===
-// Sur Safari, les sons ne marchent que si on "déverrouille" l'audio
+// === Systeme audio compatible Safari iOS ===
+// Sur Safari, les sons ne marchent que si on "deverrouille" l'audio
 // lors d'un clic de l'utilisateur. On utilise l'API Web Audio
-// qui reste déverrouillée pour toute la session après le premier clic.
+// qui reste deverrouillee pour toute la session apres le premier clic.
 let audioCtx = null;
-const audioCache = {};       // Cache des sons déjà chargés
-let sonEnCours = null;       // Pour pouvoir arrêter le son en cours
+const audioCache = {};       // Cache des sons deja charges
+let sonEnCours = null;       // Pour pouvoir arreter le son en cours
 
-// Déverrouiller l'audio (à appeler lors d'un clic)
+// Deverrouiller l'audio (a appeler lors d'un clic)
 function deverrouillerAudio() {
     if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -53,7 +53,7 @@ function deverrouillerAudio() {
     }
 }
 
-// Arrêter le son en cours
+// Arreter le son en cours
 function arreterSon() {
     if (sonEnCours) {
         sonEnCours.onended = null;
@@ -93,10 +93,13 @@ function jouerSon(url) {
             };
             source.start(0);
         });
+    }).catch(function () {
+        // Si le son ne charge pas, on continue quand meme
+        return Promise.resolve();
     });
 }
 
-// === Références aux éléments HTML ===
+// === References aux elements HTML ===
 const landingPage = document.getElementById('landing-page');
 const gameSection = document.getElementById('game');
 const gameLanding = document.getElementById('game-landing');
@@ -104,8 +107,9 @@ const romanEmperor = document.getElementById('roman-emperor');
 const resultScreen = document.getElementById('result-screen');
 const resultMessage = document.getElementById('result-message');
 const menuButton = document.getElementById('menuButton');
+const progressBar = document.getElementById('progress-bar');
 
-// === Fonction pour mélanger un tableau (Fisher-Yates) ===
+// === Fonction pour melanger un tableau (Fisher-Yates) ===
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -113,13 +117,25 @@ function shuffleArray(array) {
     }
 }
 
-// === Précharger l'image du prochain empereur ===
+// === Precharger l'image du prochain empereur ===
 function preloadNextImage() {
     const nextIndex = currentEmperorIndex + 1;
     if (nextIndex < sessionEmperors.length) {
         const img = new Image();
         img.src = sessionEmperors[nextIndex].image;
     }
+}
+
+// === Mettre a jour la barre de progression ===
+function updateProgressBar() {
+    const total = sessionEmperors.length || emperors.length || 26;
+    const pourcentage = (currentEmperorIndex / total) * 100;
+    progressBar.style.width = pourcentage + '%';
+}
+
+// === Scroll vers le haut sur mobile ===
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // === Attacher tous les boutons de navigation ===
@@ -130,24 +146,24 @@ document.getElementById('playGameButton').addEventListener('click', function () 
     gameSection.style.display = 'block';
 });
 
-// Bouton "Jouer" sur l'écran avec le fond
+// Bouton "Jouer" sur l'ecran avec le fond
 document.getElementById('playButton').addEventListener('click', function () {
     deverrouillerAudio();
     startNewGame();
 });
 
-// Bouton "Menu" pour revenir à la page d'accueil
+// Bouton "Menu" pour revenir a la page d'accueil
 menuButton.addEventListener('click', function () {
     goToMenu();
 });
 
-// Bouton "Rejouer" sur l'écran de résultat
+// Bouton "Rejouer" sur l'ecran de resultat
 document.getElementById('replayButton').addEventListener('click', function () {
     deverrouillerAudio();
     startNewGame();
 });
 
-// Bouton "Menu" sur l'écran de résultat
+// Bouton "Menu" sur l'ecran de resultat
 document.getElementById('resultMenuButton').addEventListener('click', function () {
     goToMenu();
 });
@@ -164,21 +180,21 @@ function goToMenu() {
     menuButton.style.display = 'none';
     gameLanding.style.display = 'flex';
 
-    // Réafficher la page d'accueil
+    // Reafficher la page d'accueil
     landingPage.style.display = 'flex';
 }
 
-// === Démarrer une nouvelle partie ===
+// === Demarrer une nouvelle partie ===
 function startNewGame() {
     partieId++;
     arreterSon();
 
-    // Réinitialiser les compteurs
+    // Reinitialiser les compteurs
     correctAnswersCount = 0;
     incorrectAnswersCount = 0;
     currentEmperorIndex = 0;
 
-    // Mélanger les empereurs pour cette partie
+    // Melanger les empereurs pour cette partie
     sessionEmperors = [...emperors];
     shuffleArray(sessionEmperors);
 
@@ -188,9 +204,14 @@ function startNewGame() {
     romanEmperor.style.display = 'flex';
     menuButton.style.display = 'block';
 
-    // Afficher le score initial et lancer la première question
+    // Reinitialiser la barre de progression
+    progressBar.style.width = '0%';
+
+    // Afficher le score initial et lancer la premiere question
     updateScoreDisplay();
+    updateProgressBar();
     fetchNextEmperor();
+    scrollToTop();
 }
 
 // === Choisir l'empereur actuel ===
@@ -198,21 +219,21 @@ function getRandomEmperor() {
     return sessionEmperors[currentEmperorIndex];
 }
 
-// === Créer 4 choix (1 correct + 3 faux) mélangés ===
+// === Creer 4 choix (1 correct + 3 faux) melanges ===
 function getRandomChoices(correctReign) {
     let choices = [correctReign];
 
-    // Prendre les mauvaises réponses et les mélanger
+    // Prendre les mauvaises reponses et les melanger
     let wrongAnswers = emperors
         .filter(function (emp) { return emp.reign !== correctReign; })
         .map(function (emp) { return emp.reign; });
 
     shuffleArray(wrongAnswers);
 
-    // Garder 3 mauvaises réponses
+    // Garder 3 mauvaises reponses
     choices = choices.concat(wrongAnswers.slice(0, 3));
 
-    // Mélanger tous les choix
+    // Melanger tous les choix
     shuffleArray(choices);
 
     return choices;
@@ -221,19 +242,25 @@ function getRandomChoices(correctReign) {
 // === Afficher la question suivante ===
 function fetchNextEmperor() {
     updateScoreDisplay();
+    updateProgressBar();
+
     const emperor = getRandomEmperor();
     const maPartie = partieId;
 
+    // Zone de contenu a animer
+    const questionEl = document.getElementById('question');
+    const imageElement = document.getElementById('image');
+    const choicesElement = document.getElementById('choices');
+
     // Afficher la question
     const questionText = "Quelles sont les dates de règne de " + emperor.name + " ?";
-    document.getElementById('question').innerHTML = '<div class="text-box">' + questionText + '</div>';
+    questionEl.innerHTML = '<div class="text-box">' + questionText + '</div>';
 
     // Afficher l'image avec un texte alternatif utile
-    const imageElement = document.getElementById('image');
     imageElement.src = emperor.image;
     imageElement.alt = "Portrait de " + emperor.name;
 
-    // Précharger l'image suivante
+    // Precharger l'image suivante
     preloadNextImage();
 
     // Jouer le son de la question puis le nom de l'empereur
@@ -242,9 +269,8 @@ function fetchNextEmperor() {
         jouerSon(emperor.sound);
     });
 
-    // Créer les boutons de choix
+    // Creer les boutons de choix
     const choices = getRandomChoices(emperor.reign);
-    const choicesElement = document.getElementById('choices');
     choicesElement.innerHTML = '';
 
     choices.forEach(function (choice) {
@@ -257,26 +283,38 @@ function fetchNextEmperor() {
         };
         choicesElement.appendChild(button);
     });
+
+    // Animation d'entree
+    questionEl.classList.add('animate-in');
+    imageElement.classList.add('animate-in');
+    // Retirer la classe apres l'animation pour pouvoir la rejouer
+    setTimeout(function () {
+        questionEl.classList.remove('animate-in');
+        imageElement.classList.remove('animate-in');
+    }, 500);
+
+    // Scroll vers le haut sur mobile
+    scrollToTop();
 }
 
-// === Gérer le clic sur un choix ===
+// === Gerer le clic sur un choix ===
 function handleChoice(isCorrect, button, emperorReign) {
     const maPartie = partieId;
 
-    // Désactiver tous les boutons
+    // Desactiver tous les boutons
     const buttons = document.getElementById('choices').getElementsByTagName('button');
     for (let i = 0; i < buttons.length; i++) {
         buttons[i].disabled = true;
     }
 
-    // Colorier le bouton cliqué
+    // Colorier le bouton clique
     if (isCorrect) {
         button.classList.add('correct');
     } else {
         button.classList.add('incorrect');
     }
 
-    // Si c'est faux, montrer aussi la bonne réponse en vert
+    // Si c'est faux, montrer aussi la bonne reponse en vert
     if (!isCorrect) {
         for (let i = 0; i < buttons.length; i++) {
             if (buttons[i].innerText.trim() === emperorReign.trim()) {
@@ -286,26 +324,29 @@ function handleChoice(isCorrect, button, emperorReign) {
         }
     }
 
-    // Mettre à jour le score
+    // Mettre a jour le score
     if (isCorrect) {
         correctAnswersCount++;
     } else {
         incorrectAnswersCount++;
     }
 
-    // Jouer le son de feedback, puis passer à la suite
+    // Jouer le son de feedback, puis passer a la suite
     const feedbackPath = isCorrect ? "sounds/Tu es au top.mp3" : "sounds/Tu es trop nulle.mp3";
     jouerSon(feedbackPath).then(function () {
         if (partieId !== maPartie) return;
 
         currentEmperorIndex++;
         updateScoreDisplay();
+        updateProgressBar();
 
-        // Attendre 1.5 secondes pour voir la bonne réponse
+        // Attendre 1.5 secondes pour voir la bonne reponse
         setTimeout(function () {
             if (partieId !== maPartie) return;
 
             if (currentEmperorIndex >= sessionEmperors.length) {
+                // Barre de progression a 100% avant les resultats
+                progressBar.style.width = '100%';
                 showResults();
             } else {
                 fetchNextEmperor();
@@ -314,12 +355,19 @@ function handleChoice(isCorrect, button, emperorReign) {
     });
 }
 
-// === Afficher l'écran de résultat ===
+// === Afficher l'ecran de resultat ===
 function showResults() {
-    // Cacher le jeu, afficher l'écran résultat
+    // Cacher le jeu, afficher l'ecran resultat
     romanEmperor.style.display = 'none';
     menuButton.style.display = 'none';
     resultScreen.style.display = 'flex';
+
+    // Animation d'entree pour le resultat
+    const resultBox = resultScreen.querySelector('.result-box');
+    resultBox.classList.add('animate-in');
+    setTimeout(function () {
+        resultBox.classList.remove('animate-in');
+    }, 500);
 
     // Construire le message
     let message = "Tu as fini ! Tu as " + correctAnswersCount + " bonnes réponses et " + incorrectAnswersCount + " mauvaises réponses.";
@@ -335,7 +383,7 @@ function showResults() {
     resultMessage.innerHTML = message;
 }
 
-// === Mettre à jour l'affichage du score ===
+// === Mettre a jour l'affichage du score ===
 function updateScoreDisplay() {
     document.getElementById('correctCount').textContent = correctAnswersCount;
     document.getElementById('incorrectCount').textContent = incorrectAnswersCount;

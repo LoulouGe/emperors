@@ -33,6 +33,18 @@ emperors/
 - Images JPG/WebP pour les portraits des empereurs
 - Design responsive (adapte au mobile, tablette et PC)
 
+## Progressive Web App (PWA)
+
+Le jeu est maintenant une **PWA** :
+
+- Un manifeste (`manifest.json`) décrit le nom, les icônes et le thème
+- Un *service worker* (`sw.js`) met en cache les fichiers pour pouvoir
+  jouer hors‑ligne
+- On peut ajouter le jeu à l'écran d'accueil sur mobile comme une
+  application autonome
+
+Il suffit de visiter le site et de sélectionner « Ajouter à l'écran
+d'accueil » pour l'installer, puis jouer sans connexion.
 ## Auteur
 
 Fait avec amour par Louise et son papa.

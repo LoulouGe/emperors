@@ -12,6 +12,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- progressive web app manifest -->
+    <link rel="manifest" href="manifest.json">
 </head>
 
 <body>
@@ -68,6 +70,17 @@
     </div>
 
     <script src="game.js"></script>
+
+    <!-- enregistrement du service worker pour le mode hors‑ligne -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('sw.js')
+                    .then(function (reg) { console.log('Service Worker enregistré :', reg); })
+                    .catch(function (err) { console.log('Erreur d\'enregistrement du SW :', err); });
+            });
+        }
+    </script>
 </body>
 
 </html>
